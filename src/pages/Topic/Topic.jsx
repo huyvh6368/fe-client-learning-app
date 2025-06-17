@@ -63,7 +63,7 @@ function Topic() {
                         {
                             registerTopics[item.id] ? (
                                 <Link
-                                    to={`/level/${item.id}`}
+                                    to={`/level/topic/questions/${item.id}`}
                                     className="mt-3 w-32 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow transition duration-200"
                                 >
                                     <i className="fa-solid fa-eye"></i>

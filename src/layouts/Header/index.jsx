@@ -13,10 +13,12 @@ function Header() {
         <header className="w-full bg-white sticky top-0 z-50 shadow-md px-5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                 {/* Logo */}
-                <div className="flex items-center space-x-2">
+                <Link
+                    to={"/"}
+                    className="flex items-center space-x-2">
                     <i className="fa-brands fa-angellist text-2xl text-pink-600"></i>
                     <span className="text-xl font-bold text-pink-700">App</span>
-                </div>
+                </Link>
 
                 {/* Tiêu đề trung tâm */}
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-800 hidden sm:block">
