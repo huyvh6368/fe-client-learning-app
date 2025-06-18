@@ -11,7 +11,7 @@ function ViewAnswerQuestion({ question, handlerSubmitDone }) {
             const res = await answerService.getAll(id);
             setAnswers(res.data);
         } catch (error) {
-            console.error("Lỗi khi lấy danh sách câu trả lời:", error);
+            alert(error.response.data.error)
         }
     };
     const handleSubmit = async (e) => {
@@ -21,20 +21,14 @@ function ViewAnswerQuestion({ question, handlerSubmitDone }) {
             questionId: question.id,
             answerId: selectedAnswer
         }
-
-        console.log("data add : ", data);
-
         try {
             const res = await processService.add(data);
-            console.log(res);
         } catch (error) {
-            console.log(error);
+            alert(error.response.data.error)
         }
         if (handlerSubmitDone) {
             handlerSubmitDone();
         }
-        console.log(" hàm bên con nhận : ", handlerSubmitDone)
-        console.log("click");
     }
     useEffect(() => {
         if (question?.id) {

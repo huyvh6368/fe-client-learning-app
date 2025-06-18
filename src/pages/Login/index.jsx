@@ -2,35 +2,34 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../../api/authService";
 import learnerService from "../../api/learnerService";
+import mailService from "../../api/mailService";
+
 function LoginPage() {
-    const [user, setUser] = useState({
-        email: '',
-        password: ''
-    });
+    const [user, setUser] = useState({ email: '', password: '' });
     const [loading, setLoading] = useState(false);
+    const [showForgotModal, setShowForgotModal] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState('');
+
     const navigate = useNavigate();
 
     const handlerInput = (e) => {
         const { name, value } = e.target;
         setUser(prev => ({ ...prev, [name]: value }));
     };
+
     const handlerSubmitForm = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
             const response = await authService.login(user);
-            console.log("response : ", response);
             if (response.code === 200) {
-                // Lưu token vào localStorage
                 localStorage.setItem('accessToken', response.data.accessToken);
                 localStorage.setItem('refreshToken', response.data.refreshToken);
                 localStorage.setItem('accountEmail', response.data.accountEmail);
             }
-            // find leaner 
 
             const learner = await learnerService.findByIdAccount(response.data.accountId);
             localStorage.setItem("learner", JSON.stringify(learner.data));
-
             navigate('/');
         } catch (err) {
             const errorMessage = err.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
@@ -40,8 +39,26 @@ function LoginPage() {
         }
     };
 
+    const handleSendForgot = async (e) => {
+        e.preventDefault();
+        try {
+            let mail = {
+                email: forgotEmail
+            }
+            const response = await mailService.forgot(mail);
+            console.log("kết quả send mail : ", response);
+            if (response.code === 200) {
+                alert(response.data)
+            }
+        } catch (error) {
+            alert(error.response.data.error)
+        }
+        setForgotEmail("");
+        setShowForgotModal(false);
+    };
+
     return (
-        <div className="w-screen h-screen bg-sky-300 flex flex-row justify-center items-center">
+        <div className="w-screen h-screen bg-sky-300 flex flex-row justify-center items-center relative">
             <form onSubmit={handlerSubmitForm} className="w-96 m-auto bg-white py-8 px-6 rounded-2xl shadow-lg">
                 <div className="w-full flex flex-row justify-center mb-6">
                     <h3 className="font-bold text-2xl text-gray-800 uppercase">Đăng Nhập</h3>
@@ -79,12 +96,21 @@ function LoginPage() {
                     />
                 </div>
 
+                <div className="mb-4 text-right">
+                    <button
+                        type="button"
+                        onClick={() => setShowForgotModal(true)}
+                        className="text-blue-500 text-sm hover:underline"
+                    >
+                        Quên mật khẩu?
+                    </button>
+                </div>
+
                 <div className="w-full flex flex-row justify-center gap-4">
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`mt-2 w-1/2 rounded-lg font-semibold text-white py-3 px-4 transition-colors ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
-                            }`}
+                        className={`mt-2 w-1/2 rounded-lg font-semibold text-white py-3 px-4 transition-colors ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'}`}
                     >
                         {loading ? (
                             <span className="flex items-center justify-center">
@@ -106,6 +132,36 @@ function LoginPage() {
                     </button>
                 </div>
             </form>
+
+            {/* Modal Quên Mật Khẩu */}
+            {showForgotModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm">
+                        <h2 className="text-lg font-bold text-gray-700 mb-4 text-center">Quên mật khẩu</h2>
+                        <input
+                            type="email"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            placeholder="Nhập email của bạn"
+                            className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                        <div className="flex justify-between gap-2">
+                            <button
+                                onClick={() => setShowForgotModal(false)}
+                                className="w-1/2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handleSendForgot}
+                                className="w-1/2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+                            >
+                                Gửi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -16,24 +16,22 @@ function Question() {
     const fecthDatas = async (topicId) => {
         try {
             const res = await questionService.getAll(topicId);
-            console.log("res : ", res);
             const arrays = res.data;
             const temp = {};
             for (let item of arrays) {
                 try {
                     let result = await processService.check(learner.id, item.id);
                     temp[item.id] = result.data;
-                } catch (e) {
-                    console.log(e);
-
+                } catch (error) {
+                    alert(error.response.data.error)
                 }
             }
 
             setQuestionStatus(temp);
-            setQuestions(res.data)
+            let newArray = arrays.reverse();
+            setQuestions(newArray)
         } catch (error) {
-            console.log(error);
-
+            alert(error.response.data.error)
         }
     }
     const handlerJoin = (question) => {
@@ -46,14 +44,8 @@ function Question() {
     }
     const handlerShowScore = async (question) => {
         try {
-            console.log("questions : ", question);
-
-            const res = await processService.findScore(learner.id, question.id);
-            console.log("res : ", res.data);
-
+            const res = await processService.findScore(learner.id, question.id)
             const total = res.data.score;
-
-
             const answerName = res.data.answerName;
             setScoreData({
                 questionTitle: question.title,
@@ -63,15 +55,12 @@ function Question() {
             });
             setShowScoreModal(true); // mở form
         } catch (error) {
-            console.log(error);
+            alert(error.response.data.error)
         }
     };
-    console.log("thông tin điểm số : ", scoreData);
-
     useEffect(() => {
         fecthDatas(id);
     }, [])
-    console.log(" questions - status : ", questionStatus);
     return (
         <article className="bg-white w-screen min-h-screen p-8">
             {!showAnswer && <h1 className="flex justify-center text-2xl text-pink-700 font-bold">List Questions</h1>}

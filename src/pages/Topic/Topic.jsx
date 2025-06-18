@@ -18,17 +18,15 @@ function Topic() {
             for (const item of response.data) {
                 try {
                     const result = await learnerTopicService.check(learner.id, item.id);
-                    console.log(" result : ", result);
 
                     registrationStatus[item.id] = result.data; // Giả sử result.data là boolean
                 } catch (error) {
-                    console.log(error);
-                    registrationStatus[item.id] = false;
+                    alert(error.response.data.error)
                 }
             }
             setRegisterTopics(registrationStatus)
-        } catch (e) {
-            console.log("lỗi : ", e);
+        } catch (error) {
+            alert(error.response.data.error)
         }
     };
     const handlerJoin = async (topicId) => {
@@ -36,17 +34,15 @@ function Topic() {
             learnerId: learner.id,
             topicId: topicId
         }
-        console.log(newData);
+
         try {
             const res = await learnerTopicService.add(newData);
-            console.log(res);
-        } catch (e) {
-            console.log(e);
+
+        } catch (error) {
+            alert(error.response.data.error)
         }
         fecthDatas(id)
     }
-    console.log("Object  : ", registerTopics);
-
     useEffect(() => {
         fecthDatas(id);
     }, []);

@@ -26,22 +26,44 @@ function RegisterPage() {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        console.log("data : ", formData);
-        try {
-            const response = await authService.register(formData);
-            console.log("response : ", response);
-            navigate("/login")
-            // Xử lý sau khi đăng ký thành công (redirect hoặc hiển thị thông báo)
-        } catch (error) {
-            // console.error("Registration failed:", error);
-            // console.log("lỗi : ",error.response.data);
-            alert(error.response.data.error)
-            // Xử lý lỗi
-        }
-    };
+    const { email, password, name, phoneNumber } = formData;
+
+    // Kiểm tra rỗng
+    if (!email || !password || !name || !phoneNumber) {
+        alert("Vui lòng nhập đầy đủ thông tin");
+        return;
+    }
+
+    // Kiểm tra email hợp lệ
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("Email không hợp lệ");
+        return;
+    }
+
+    // Kiểm tra số điện thoại (10 chữ số)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phoneNumber)) {
+        alert("Số điện thoại phải có 10 chữ số");
+        return;
+    }
+
+    // Kiểm tra mật khẩu (ít nhất 6 ký tự)
+    if (password.length < 6) {
+        alert("Mật khẩu phải từ 6 ký tự trở lên");
+        return;
+    }
+
+    try {
+        const response = await authService.register(formData);
+        navigate("/login");
+    } catch (error) {
+        alert(error?.response?.data?.error || "Đăng ký thất bại");
+    }
+};
 
     return (
         <div className="w-screen min-h-screen bg-sky-300 flex flex-col justify-center items-center p-4">
@@ -90,8 +112,8 @@ function RegisterPage() {
                         <label className="block text-sm font-medium mb-1">Số điện thoại</label>
                         <input
                             type="text"
-                            name="phone"
-                            value={formData.phone}
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
                             onChange={handleInputChange}
                             className="w-full px-3 py-2 border rounded-md"
                         />

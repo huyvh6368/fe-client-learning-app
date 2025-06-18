@@ -25,13 +25,13 @@ function Level() {
                     const result = await learnerLevelService.check(learner.id, level.id);
                     registrationStatus[level.id] = result.data; // Giả sử result.data là boolean
                 } catch (error) {
-                    console.log(error);
+                    alert("lỗi")
                     registrationStatus[level.id] = false;
                 }
             }
             setRegisteredLevels(registrationStatus);
         } catch (error) {
-            console.log(error);
+            alert("lỗi")
         }
     }
 
@@ -41,18 +41,15 @@ function Level() {
     const handlerJoin = async (id) => {
         let newData = data
         newData.levelId = id;
-        console.log(newData);
+
         try {
             const res = await learnerLevelService.add(newData);
-            console.log(res.data);
-             fetchLevels();
+
+            fetchLevels();
         } catch (e) {
-            console.log(e);
+            alert("lỗi find all")
         }
     }
-
-
-    console.log("data : ", data);
 
     return (
         <article className="bg-white w-screen min-h-screen p-8">
